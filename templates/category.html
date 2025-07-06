@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category|title }} - Fashion Forward{% endblock %}
+
+{% block content %}
+<!-- Category Header -->
+<section class="category-header py-5" style="background: linear-gradient(135deg, #f8f9fa, #e9ecef);">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1 class="display-4 mb-3" style="font-family: 'Playfair Display', serif; font-weight: 700; color: var(--primary-color);">
+                    {{ category|title }}
+                </h1>
+                <p class="lead text-muted">
+                    {% if category == 'trends' %}
+                        Stay ahead with the latest fashion trends and runway inspirations
+                    {% elif category == 'style tips' %}
+                        Expert styling advice to elevate your wardrobe
+                    {% elif category == 'seasonal' %}
+                        Fashion looks for every season and occasion
+                    {% elif category == 'accessories' %}
+                        Complete your look with the perfect accessories
+                    {% elif category == 'sustainable' %}
+                        Eco-friendly fashion choices for conscious consumers
+                    {% else %}
+                        Discover amazing {{ category }} content
+                    {% endif %}
+                </p>
+                <div class="category-stats mt-4">
+                    <span class="badge bg-primary me-3">
+                        <i class="fas fa-file-alt me-1"></i>{{ posts|length }} Articles
+                    </span>
+                    <span class="badge bg-secondary">
+                        <i class="fas fa-tag me-1"></i>{{ category|title }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Posts Grid -->
+<section class="container my-5">
+    {% if posts %}
+    <div class="row">
+        {% for post in posts %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="blog-card h-100">
+                <div class="position-relative">
+                    <img src="https://picsum.photos/400/250?random={{ post.id + 300 }}" 
+                         class="card-img-top" alt="{{ post.title }}">
+                    <div class="position-absolute top-0 end-0 m-3">
+                        <span class="category-badge">{{ post.category|title }}</span>
+                    </div>
+                </div>
+                <div class="blog-card-body d-flex flex-column">
+                    <h5 class="blog-title">
+                        <a href="{{ url_for('main.blog_post', post_id=post.id) }}" class="text-decoration-none">
+                            {{ post.title }}
+                        </a>
+                    </h5>
+                    <p class="blog-summary">{{ post.summary[:150] }}{% if post.summary|length > 150 %}...{% endif %}</p>
+                    <div class="blog-meta mt-auto">
+                        <span><i class="fas fa-calendar-alt me-1"></i>{{ post.created_at[:10] }}</span>
+                        <span><i class="fas fa-eye me-1"></i>{{ post.views }} views</span>
+                    </div>
+                    <a href="{{ url_for('main.blog_post', post_id=post.id) }}" class="btn btn-primary mt-3">
+                        Read More <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if total_pages > 1 %}
+    <nav aria-label="Category pagination">
+        <ul class="pagination">
+            {% if has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('main.category_posts', category=category, page=page-1) }}">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+            
+            {% for p in range(1, total_pages + 1) %}
+                {% if p == page %}
+                <li class="page-item active">
+                    <span class="page-link">{{ p }}</span>
+                </li>
+                {% elif p == 1 or p == total_pages or (p >= page - 2 and p <= page + 2) %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('main.category_posts', category=category, page=p) }}">{{ p }}</a>
+                </li>
+                {% elif p == page - 3 or p == page + 3 %}
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('main.category_posts', category=category, page=page+1) }}">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    
+    {% else %}
+    <!-- No Posts -->
+    <div class="text-center py-5">
+        <i class="fas fa-folder-open" style="font-size: 4rem; color: #dee2e6; margin-bottom: 2rem;"></i>
+        <h3 style="color: #6c757d;">No Posts in {{ category|title }} Yet</h3>
+        <p class="text-muted">We're working on creating amazing {{ category }} content. Check back soon!</p>
+        <a href="{{ url_for('main.home') }}" class="btn btn-primary">
+            <i class="fas fa-home me-2"></i>Explore All Posts
+        </a>
+    </div>
+    {% endif %}
+</section>
+
+<!-- Related Categories -->
+<section class="container mb-5">
+    <div class="row">
+        <div class="col-12">
+            <h4 class="mb-4 text-center" style="font-family: 'Playfair Display', serif; font-weight: 600;">
+                Explore Other Categories
+            </h4>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="row text-center">
+                        {% set categories = [
+                            ('trends', 'fas fa-fire', 'Fashion Trends'),
+                            ('style tips', 'fas fa-lightbulb', 'Style Tips'),
+                            ('seasonal', 'fas fa-leaf', 'Seasonal Fashion'),
+                            ('accessories', 'fas fa-gem', 'Accessories'),
+                            ('sustainable', 'fas fa-recycle', 'Sustainable Fashion')
+                        ] %}
+                        
+                        {% for cat_name, icon, display_name in categories %}
+                        {% if cat_name != category %}
+                        <div class="col-md-4 col-6 mb-3">
+                            <a href="{{ url_for('main.category_posts', category=cat_name) }}" 
+                               class="category-link text-decoration-none">
+                                <div class="category-card p-3" style="background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); transition: all 0.3s ease;">
+                                    <i class="{{ icon }} mb-2" style="font-size: 2rem; color: var(--secondary-color);"></i>
+                                    <h6 class="mb-0" style="color: var(--primary-color);">{{ display_name }}</h6>
+                                </div>
+                            </a>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .category-header {
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .category-stats .badge {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15) !important;
+    }
+    
+    .category-link:hover .category-card {
+        background: var(--light-bg) !important;
+    }
+</style>
+{% endblock %}

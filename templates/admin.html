@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Fashion Forward{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 style="font-family: 'Playfair Display', serif; font-weight: 600;">
+                    <i class="fas fa-tachometer-alt me-3"></i>Admin Dashboard
+                </h1>
+                <button class="btn btn-primary" onclick="generateContent()" id="generateBtn">
+                    <i class="fas fa-magic me-2"></i>Generate Content Now
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="row mb-5">
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card p-4" style="background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); border-left: 4px solid #3498db;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-1" style="color: #3498db;">{{ total_posts }}</h3>
+                        <p class="text-muted mb-0">Total Posts</p>
+                    </div>
+                    <i class="fas fa-file-alt" style="font-size: 2.5rem; color: #3498db; opacity: 0.7;"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card p-4" style="background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); border-left: 4px solid #2ecc71;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-1" style="color: #2ecc71;">{{ published_posts }}</h3>
+                        <p class="text-muted mb-0">Published</p>
+                    </div>
+                    <i class="fas fa-check-circle" style="font-size: 2.5rem; color: #2ecc71; opacity: 0.7;"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card p-4" style="background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); border-left: 4px solid #e74c3c;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-1" style="color: #e74c3c;">{{ total_views }}</h3>
+                        <p class="text-muted mb-0">Total Views</p>
+                    </div>
+                    <i class="fas fa-eye" style="font-size: 2.5rem; color: #e74c3c; opacity: 0.7;"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card p-4" style="background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); border-left: 4px solid #f39c12;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-1" style="color: #f39c12;">20</h3>
+                        <p class="text-muted mb-0">Daily Target</p>
+                    </div>
+                    <i class="fas fa-target" style="font-size: 2.5rem; color: #f39c12; opacity: 0.7;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Alert Area -->
+    <div id="alertArea"></div>
+    
+    <!-- Content Management -->
+    <div class="row">
+        <!-- Recent Posts -->
+        <div class="col-lg-8 mb-4">
+            <div class="content-section p-4" style="background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+                <h4 class="mb-4" style="font-family: 'Playfair Display', serif; font-weight: 600;">
+                    <i class="fas fa-clock me-2"></i>Recent Posts
+                </h4>
+                
+                {% if recent_posts %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Created</th>
+                                <th>Views</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for post in recent_posts %}
+                            <tr>
+                                <td>
+                                    <div style="max-width: 300px;">
+                                        <strong>{{ post.title[:50] }}{% if post.title|length > 50 %}...{% endif %}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ post.summary[:80] }}{% if post.summary|length > 80 %}...{% endif %}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ post.category|title }}</span>
+                                </td>
+                                <td>{{ post.created_at[:10] }}</td>
+                                <td>
+                                    <span class="badge bg-info">{{ post.views }}</span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('main.blog_post', post_id=post.id) }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-file-alt" style="font-size: 3rem; color: #dee2e6;"></i>
+                    <p class="text-muted mt-3">No posts available yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Generation Log -->
+        <div class="col-lg-4 mb-4">
+            <div class="content-section p-4" style="background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+                <h4 class="mb-4" style="font-family: 'Playfair Display', serif; font-weight: 600;">
+                    <i class="fas fa-history me-2"></i>Generation Log
+                </h4>
+                
+                {% if generation_log %}
+                <div class="generation-log">
+                    {% for log in generation_log %}
+                    <div class="log-entry mb-3 p-3" style="background: #f8f9fa; border-radius: 10px;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong>{{ log.date }}</strong>
+                                <br>
+                                <small class="text-muted">
+                                    {% if log.status == 'success' %}
+                                        <i class="fas fa-check-circle text-success me-1"></i>
+                                        Generated {{ log.posts_generated }} posts
+                                    {% else %}
+                                        <i class="fas fa-exclamation-circle text-warning me-1"></i>
+                                        {{ log.status }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <small class="text-muted">{{ log.created_at[:5] }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-clock" style="font-size: 2rem; color: #dee2e6;"></i>
+                    <p class="text-muted mt-2">No generation history yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="content-section p-4" style="background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+                <h4 class="mb-4" style="font-family: 'Playfair Display', serif; font-weight: 600;">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </h4>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="action-card p-3 text-center" style="background: #f8f9fa; border-radius: 10px; cursor: pointer;" onclick="window.open('{{ url_for('main.home') }}', '_blank')">
+                            <i class="fas fa-home mb-2" style="font-size: 2rem; color: var(--primary-color);"></i>
+                            <h6>View Website</h6>
+                            <small class="text-muted">Check the live site</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="action-card p-3 text-center" style="background: #f8f9fa; border-radius: 10px; cursor: pointer;" onclick="generateContent()">
+                            <i class="fas fa-magic mb-2" style="font-size: 2rem; color: var(--secondary-color);"></i>
+                            <h6>Generate Content</h6>
+                            <small class="text-muted">Create new blog posts</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="action-card p-3 text-center" style="background: #f8f9fa; border-radius: 10px; cursor: pointer;" onclick="location.reload()">
+                            <i class="fas fa-sync-alt mb-2" style="font-size: 2rem; color: var(--accent-color);"></i>
+                            <h6>Refresh Data</h6>
+                            <small class="text-muted">Update dashboard</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+    }
+    
+    .action-card {
+        transition: all 0.3s ease;
+    }
+    
+    .action-card:hover {
+        background: #e9ecef !important;
+        transform: translateY(-2px);
+    }
+    
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+    
+    .generation-log {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function showAlert(message, type = 'info') {
+        const alertArea = document.getElementById('alertArea');
+        const alertDiv = document.createElement('div');
+                 alertDiv.className = 'alert alert-' + type + ' alert-dismissible fade show';
+                 alertDiv.innerHTML = message + '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+        alertArea.appendChild(alertDiv);
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            if (alertDiv) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+    
+    function generateContent() {
+        const btn = document.getElementById('generateBtn');
+        const originalText = btn.innerHTML;
+        
+        // Show loading state
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating...';
+        btn.disabled = true;
+        
+        fetch('/api/generate-content', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+                 .then(response => response.json())
+         .then(data => {
+             if (data.success) {
+                 showAlert(
+                     '<i class="fas fa-check-circle me-2"></i>Success! Generated ' + data.data.posts_created + ' new blog posts.',
+                     'success'
+                 );
+                 
+                 // Refresh the page after a short delay
+                 setTimeout(() => {
+                     location.reload();
+                 }, 2000);
+             } else {
+                 showAlert(
+                     '<i class="fas fa-exclamation-triangle me-2"></i>Error: ' + data.error,
+                     'danger'
+                 );
+             }
+         })
+                 .catch(error => {
+             showAlert(
+                 '<i class="fas fa-exclamation-triangle me-2"></i>Failed to generate content: ' + error.message,
+                 'danger'
+             );
+         })
+        .finally(() => {
+            // Restore button state
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        });
+    }
+    
+    // Auto-refresh dashboard every 5 minutes
+    setInterval(() => {
+        location.reload();
+    }, 5 * 60 * 1000);
+    
+    // Add tooltips to action cards
+    document.querySelectorAll('.action-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+</script>
+{% endblock %}

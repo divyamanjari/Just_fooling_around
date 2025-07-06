@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Fashion Forward - Latest Trends & Style Inspiration{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #e8b4cb;
+            --accent-color: #f39c12;
+            --text-color: #2c3e50;
+            --light-bg: #f8f9fa;
+            --border-color: #e9ecef;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .header-brand {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 2rem;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .header-brand:hover {
+            color: var(--secondary-color);
+            text-decoration: none;
+        }
+        
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+        }
+        
+        .navbar-nav .nav-link {
+            color: var(--text-color);
+            font-weight: 500;
+            margin: 0 0.5rem;
+            transition: color 0.3s ease;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            color: var(--secondary-color);
+        }
+        
+        .search-form {
+            max-width: 400px;
+        }
+        
+        .search-form .form-control {
+            border-radius: 25px;
+            border: 2px solid var(--border-color);
+            padding: 0.5rem 1rem;
+        }
+        
+        .search-form .btn {
+            border-radius: 25px;
+            background: var(--secondary-color);
+            border: none;
+            color: white;
+            padding: 0.5rem 1.5rem;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 3rem;
+        }
+        
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .blog-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+        
+        .blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .blog-card img {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+        
+        .blog-card-body {
+            padding: 1.5rem;
+        }
+        
+        .blog-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+        
+        .blog-summary {
+            color: #6c757d;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+        
+        .blog-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #adb5bd;
+        }
+        
+        .category-badge {
+            background: var(--secondary-color);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary {
+            background: var(--secondary-color);
+            border: none;
+            border-radius: 25px;
+            padding: 0.6rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        
+        .footer {
+            background: var(--primary-color);
+            color: white;
+            padding: 3rem 0 1rem;
+            margin-top: 4rem;
+        }
+        
+        .footer h5 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .footer a {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer a:hover {
+            color: var(--secondary-color);
+        }
+        
+        .pagination {
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        .pagination .page-link {
+            color: var(--primary-color);
+            border: none;
+            margin: 0 0.2rem;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .pagination .page-item.active .page-link {
+            background: var(--secondary-color);
+            color: white;
+        }
+        
+        .social-icons a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            text-align: center;
+            line-height: 40px;
+            margin-right: 0.5rem;
+            transition: background 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            background: var(--secondary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .header-brand {
+                font-size: 1.5rem;
+            }
+            
+            .search-form {
+                margin-top: 1rem;
+                width: 100%;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="header-brand" href="{{ url_for('main.home') }}">
+                <i class="fas fa-gem me-2"></i>Fashion Forward
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.home') }}">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown">
+                            Categories
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('main.category_posts', category='trends') }}">Fashion Trends</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('main.category_posts', category='style tips') }}">Style Tips</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('main.category_posts', category='seasonal') }}">Seasonal Fashion</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('main.category_posts', category='accessories') }}">Accessories</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('main.category_posts', category='sustainable') }}">Sustainable Fashion</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.admin_dashboard') }}">Dashboard</a>
+                    </li>
+                </ul>
+                
+                <!-- Search Form -->
+                <form class="search-form d-flex" method="GET" action="{{ url_for('main.search') }}">
+                    <input class="form-control me-2" type="search" name="q" placeholder="Search fashion topics..." aria-label="Search">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Add padding for fixed navbar -->
+    <div style="padding-top: 80px;"></div>
+    
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5>Fashion Forward</h5>
+                    <p>Your ultimate destination for the latest fashion trends, style inspiration, and beauty tips. Stay ahead of the curve with our daily curated content.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-pinterest"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h5>Categories</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('main.category_posts', category='trends') }}">Trends</a></li>
+                        <li><a href="{{ url_for('main.category_posts', category='style tips') }}">Style Tips</a></li>
+                        <li><a href="{{ url_for('main.category_posts', category='seasonal') }}">Seasonal</a></li>
+                        <li><a href="{{ url_for('main.category_posts', category='accessories') }}">Accessories</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('main.home') }}">Home</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>Newsletter</h5>
+                    <p>Subscribe to get the latest fashion updates delivered to your inbox.</p>
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Your email">
+                        <button class="btn btn-primary" type="button">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <hr style="opacity: 0.3;">
+            <div class="text-center">
+                <p>&copy; 2024 Fashion Forward. All rights reserved. | Powered by AI-driven content generation</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

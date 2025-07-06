@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %}Search Results for "{{ query }}" - Fashion Forward{% endblock %}
+
+{% block content %}
+<!-- Search Header -->
+<section class="search-header py-5" style="background: linear-gradient(135deg, #f8f9fa, #e9ecef);">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1 class="display-5 mb-3" style="font-family: 'Playfair Display', serif; font-weight: 700; color: var(--primary-color);">
+                    Search Results
+                </h1>
+                <p class="lead text-muted mb-4">
+                    {% if total_posts > 0 %}
+                        Found {{ total_posts }} result{{ 's' if total_posts != 1 else '' }} for "<strong>{{ query }}</strong>"
+                    {% else %}
+                        No results found for "<strong>{{ query }}</strong>"
+                    {% endif %}
+                </p>
+                
+                <!-- Search Form -->
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <form method="GET" action="{{ url_for('main.search') }}" class="search-form-large">
+                            <div class="input-group input-group-lg">
+                                <input type="search" name="q" class="form-control" 
+                                       placeholder="Search fashion topics..." 
+                                       value="{{ query }}"
+                                       style="border-radius: 25px 0 0 25px; border: 2px solid var(--border-color);">
+                                <button class="btn btn-primary" type="submit" 
+                                        style="border-radius: 0 25px 25px 0;">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Search Results -->
+<section class="container my-5">
+    {% if posts %}
+    <div class="row">
+        {% for post in posts %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="blog-card h-100">
+                <div class="position-relative">
+                    <img src="https://picsum.photos/400/250?random={{ post.id + 400 }}" 
+                         class="card-img-top" alt="{{ post.title }}">
+                    <div class="position-absolute top-0 end-0 m-3">
+                        <span class="category-badge">{{ post.category|title }}</span>
+                    </div>
+                    <!-- Search match indicator -->
+                    <div class="position-absolute top-0 start-0 m-3">
+                        <span class="badge bg-warning text-dark">
+                            <i class="fas fa-search me-1"></i>Match
+                        </span>
+                    </div>
+                </div>
+                <div class="blog-card-body d-flex flex-column">
+                    <h5 class="blog-title">
+                        <a href="{{ url_for('main.blog_post', post_id=post.id) }}" class="text-decoration-none">
+                            {{ post.title }}
+                        </a>
+                    </h5>
+                    <p class="blog-summary">{{ post.summary[:150] }}{% if post.summary|length > 150 %}...{% endif %}</p>
+                    <div class="blog-meta mt-auto">
+                        <span><i class="fas fa-calendar-alt me-1"></i>{{ post.created_at[:10] }}</span>
+                        <span><i class="fas fa-eye me-1"></i>{{ post.views }} views</span>
+                    </div>
+                    <a href="{{ url_for('main.blog_post', post_id=post.id) }}" class="btn btn-primary mt-3">
+                        Read More <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if total_pages > 1 %}
+    <nav aria-label="Search results pagination">
+        <ul class="pagination">
+            {% if has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('main.search', q=query, page=page-1) }}">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+            
+            {% for p in range(1, total_pages + 1) %}
+                {% if p == page %}
+                <li class="page-item active">
+                    <span class="page-link">{{ p }}</span>
+                </li>
+                {% elif p == 1 or p == total_pages or (p >= page - 2 and p <= page + 2) %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('main.search', q=query, page=p) }}">{{ p }}</a>
+                </li>
+                {% elif p == page - 3 or p == page + 3 %}
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('main.search', q=query, page=page+1) }}">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    
+    {% else %}
+    <!-- No Results -->
+    <div class="text-center py-5">
+        <i class="fas fa-search" style="font-size: 4rem; color: #dee2e6; margin-bottom: 2rem;"></i>
+        <h3 style="color: #6c757d;">No Results Found</h3>
+        <p class="text-muted mb-4">We couldn't find any posts matching "{{ query }}". Try a different search term or browse our categories.</p>
+        
+        <!-- Search Suggestions -->
+        <div class="search-suggestions mb-4">
+            <h5 class="mb-3" style="font-family: 'Playfair Display', serif;">Try searching for:</h5>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                        {% set suggestions = [
+                            'fashion trends', 'style tips', 'seasonal fashion', 
+                            'accessories', 'sustainable fashion', 'street style',
+                            'outfit ideas', 'designer fashion', 'vintage style'
+                        ] %}
+                        {% for suggestion in suggestions %}
+                        <a href="{{ url_for('main.search', q=suggestion) }}" class="btn btn-outline-secondary btn-sm">
+                            {{ suggestion }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <a href="{{ url_for('main.home') }}" class="btn btn-primary me-3">
+                    <i class="fas fa-home me-2"></i>Browse All Posts
+                </a>
+                <a href="{{ url_for('main.category_posts', category='trends') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-fire me-2"></i>Latest Trends
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</section>
+
+<!-- Popular Categories (shown when no results) -->
+{% if not posts %}
+<section class="container mb-5">
+    <div class="row">
+        <div class="col-12">
+            <h4 class="mb-4 text-center" style="font-family: 'Playfair Display', serif; font-weight: 600;">
+                Browse by Category
+            </h4>
+            <div class="row justify-content-center">
+                {% set categories = [
+                    ('trends', 'fas fa-fire', 'Fashion Trends', 'Latest runway and street style trends'),
+                    ('style tips', 'fas fa-lightbulb', 'Style Tips', 'Expert advice for better styling'),
+                    ('seasonal', 'fas fa-leaf', 'Seasonal Fashion', 'Looks for every season'),
+                    ('accessories', 'fas fa-gem', 'Accessories', 'Complete your perfect look'),
+                    ('sustainable', 'fas fa-recycle', 'Sustainable Fashion', 'Eco-friendly style choices'),
+                    ('outfits', 'fas fa-tshirt', 'Outfit Ideas', 'Complete outfit inspiration')
+                ] %}
+                
+                {% for cat_name, icon, display_name, description in categories %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <a href="{{ url_for('main.category_posts', category=cat_name) }}" 
+                       class="category-link text-decoration-none">
+                        <div class="category-card p-4 h-100" style="background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); transition: all 0.3s ease;">
+                            <div class="text-center">
+                                <i class="{{ icon }} mb-3" style="font-size: 2.5rem; color: var(--secondary-color);"></i>
+                                <h5 class="mb-2" style="color: var(--primary-color);">{{ display_name }}</h5>
+                                <p class="text-muted small mb-0">{{ description }}</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .search-header {
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .search-form-large .form-control:focus {
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 0.2rem rgba(232, 180, 203, 0.25);
+    }
+    
+    .search-suggestions .btn {
+        margin: 0.2rem;
+        transition: all 0.3s ease;
+    }
+    
+    .search-suggestions .btn:hover {
+        background: var(--secondary-color);
+        border-color: var(--secondary-color);
+        color: white;
+    }
+    
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15) !important;
+    }
+    
+    .category-link:hover .category-card {
+        background: var(--light-bg) !important;
+    }
+    
+    .badge.bg-warning {
+        font-size: 0.75rem;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Highlight search terms in results
+    function highlightSearchTerm() {
+        const query = '{{ query|lower }}';
+        if (!query) return;
+        
+        const searchTerms = query.split(' ');
+        const titleElements = document.querySelectorAll('.blog-title a, .blog-summary');
+        
+        titleElements.forEach(element => {
+            let content = element.innerHTML;
+            
+            searchTerms.forEach(term => {
+                if (term.length > 2) {
+                    const regex = new RegExp(`(${term})`, 'gi');
+                    content = content.replace(regex, '<mark style="background: #fff3cd; padding: 0.1rem 0.2rem;">$1</mark>');
+                }
+            });
+            
+            element.innerHTML = content;
+        });
+    }
+    
+    // Run highlighting when page loads
+    document.addEventListener('DOMContentLoaded', highlightSearchTerm);
+    
+    // Auto-focus search input
+    document.querySelector('input[name="q"]').focus();
+</script>
+{% endblock %}
